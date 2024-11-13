@@ -1,0 +1,52 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: kotlin-onboarding
+  title: Create new Kotlin service and onboard to CI/CD 
+  description: Create new Kotlin service and onbaord to CI/CD 
+  tags:
+    - tf
+    - aws
+    - gcp
+    - azure
+spec:
+  owner: greg.kroon@harness.io
+  type: environment
+  parameters:
+    - title: Project and Repo Detail
+      properties:
+        Owner:
+          title: Ownername
+          type: string
+          ui:field: OwnerPicker
+          ui:options: {}  # Ensure this has a value or remove if not needed
+        reponame:
+          title: New project repository name 
+          type: string
+          description: Your Repo Name
+        organisation:
+          title: Organisation name 
+          type: string
+          description: Your Organisation Name  
+        # This field is hidden but needed to authenticate the request to trigger the pipeline
+        token:
+          title: Harness Token
+          type: string
+          ui:widget: password
+          ui:field: HarnessAuthToken
+  steps:
+    - id: trigger
+      name: Provisioning your Infrastructure
+      action: trigger:harness-custom-pipeline
+      input:
+        url: 'https://app.harness.io/ng/account/Ke-E1FX2SO2ZAL2TXqpLjg/module/cd/orgs/default/projects/pexa/pipelines/service_onboarding_pipeline/deployments/1IjwrJrBTlej8Ae8CB2c5w/pipeline?storeType=INLINE'
+        inputset:
+          harness_org: ${{ parameters.organisation }}
+          project_name: ${{ parameters.reponame }}
+          repository_name: ${{ parameters.reponame }}
+        apikey: ${{ parameters.token }}
+
+  output:
+    links:
+      - title: Pipeline Details
+        url: ${{ steps.trigger.output.PipelineUrl }}
